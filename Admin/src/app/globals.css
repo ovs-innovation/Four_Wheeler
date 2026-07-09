@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #0B0B0B;
+  --color-foreground: #FFFFFF;
+  
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  
+  /* Overwrite default slate variables to support the updated luxury palette globally */
+  --color-slate-950: #0B0B0B;
+  --color-slate-900: #111111;
+  --color-slate-850: #171717;
+  --color-slate-800: #171717;
+  --color-slate-750: #2A2A2A;
+  --color-slate-700: #2A2A2A;
+  
+  /* Metallic Gold and Amber accents */
+  --color-amber-500: #D4AF37;
+  --color-amber-600: #F4B400;
+  --color-amber-400: #D4AF37;
+  
+  /* Secondary and Muted text variables */
+  --color-slate-400: #9CA3AF;
+  --color-slate-500: #6B7280;
+  --color-slate-300: #FFFFFF;
+  --color-slate-100: #FFFFFF;
+  
+  /* Success and Danger overrides */
+  --color-green-500: #22C55E;
+  --color-red-500: #EF4444;
+  --color-red-600: #EF4444;
+}
+
+:root {
+  --background: #0B0B0B;
+  --foreground: #FFFFFF;
+  color-scheme: dark;
+}
+
+body {
+  background: #0B0B0B;
+  color: #FFFFFF;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0B0B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Base custom selection highlight */
+::selection {
+  background: rgba(212, 175, 55, 0.2);
+  color: #FFFFFF;
+}

@@ -8,8 +8,28 @@ import { Calendar, ArrowRight, ShieldCheck } from 'lucide-react'
 import { INITIAL_VEHICLES, INITIAL_BLOGS } from '@/lib/mock-data'
 
 export default async function HomePage() {
-  const vehicles = INITIAL_VEHICLES.slice(0, 6)
-  const blogs = INITIAL_BLOGS
+  let vehicles = INITIAL_VEHICLES.slice(0, 6);
+  let blogs = INITIAL_BLOGS;
+
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const [resCars, resBlogs] = await Promise.all([
+      fetch(`${apiBase}/cars?limit=6`, { cache: 'no-store' }),
+      fetch(`${apiBase}/blogs?limit=2`, { cache: 'no-store' })
+    ]);
+    
+    const carsData = await resCars.json();
+    const blogsData = await resBlogs.json();
+    
+    if (carsData.success && carsData.data?.cars?.length > 0) {
+      vehicles = carsData.data.cars;
+    }
+    if (blogsData.success && blogsData.data?.length > 0) {
+      blogs = blogsData.data;
+    }
+  } catch (err) {
+    console.error('Failed to load homepage data from Backend, falling back to mock listings.', err.message);
+  }
 
   const budgetRanges = [
     { label: 'Below 15 Lakh', query: 'maxPrice=1500000' },
@@ -129,13 +149,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. Car Junction Certification Protection */}
+      {/* 6. Four Wheeler Certification Protection */}
       <section className="py-16 bg-white border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex p-3.5 rounded-full bg-accent/10 text-accent mb-2">
             <ShieldCheck className="h-9 w-9" />
           </div>
-          <h3 className="text-2xl font-black text-primary tracking-tight">Car Junction Certified Protection</h3>
+          <h3 className="text-2xl font-black text-primary tracking-tight">Four Wheeler Certified Protection</h3>
           <p className="text-xs text-slate-500 font-semibold leading-relaxed max-w-2xl mx-auto">
             Get complete peace of mind with our 120-point mechanical evaluation. We check engine compression values, brake responsiveness, suspension wear, and onboard diagnostics logs so you buy with total confidence.
           </p>

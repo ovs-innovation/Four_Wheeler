@@ -42,59 +42,44 @@ export default function BookTestDriveForm({ vehicleId, vehicleTitle }) {
     setErrorMsg(null)
     setSuccessMsg(null)
 
-    setTimeout(() => {
-      try {
-        const stored = localStorage.getItem('cj_bookings')
-        const bookingsList = stored ? JSON.parse(stored) : []
+    try {
+      const token = localStorage.getItem('cj_user_token')
+      const headers = {
+        'Content-Type': 'application/json'
+      }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
 
-        const newBooking = {
-          id: 'b_' + Date.now(),
-          vehicleId,
-          vehicleTitle,
-          userId: session?.user?.id || 'guest_user',
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const response = await fetch(`${apiBase}/enquiries`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
           name: data.name,
           email: data.email,
           phone: data.phone,
-          dateTime: data.dateTime,
-          notes: data.notes || '',
-          status: 'PENDING',
-          type: 'TEST_DRIVE'
-        }
-
-        bookingsList.push(newBooking)
-        localStorage.setItem('cj_bookings', JSON.stringify(bookingsList))
-
-        // Also push a simulated lead to the seller
-        const storedVehicles = localStorage.getItem('cj_vehicles')
-        const vehiclesList = storedVehicles ? JSON.parse(storedVehicles) : []
-        const currentCar = vehiclesList.find((c) => c.id === vehicleId)
-        
-        const storedLeads = localStorage.getItem('cj_leads')
-        const leadsList = storedLeads ? JSON.parse(storedLeads) : []
-        
-        const newLead = {
-          id: 'l_' + Date.now(),
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          vehicle: vehicleTitle,
-          status: 'NEW',
-          date: new Date().toISOString().split('T')[0],
-          sellerId: currentCar?.sellerId || 'dealer_apex',
+          bikeName: vehicleTitle,
+          vehicleTitle: vehicleTitle,
+          bikeBrand: 'Four Wheeler',
+          type: 'TEST_DRIVE',
           message: data.notes || 'Interested in booking a demonstration session.'
-        }
-        leadsList.push(newLead)
-        localStorage.setItem('cj_leads', JSON.stringify(leadsList))
+        })
+      })
 
+      const resData = await response.json()
+      if (resData.success) {
         setSuccessMsg('Your booking request has been registered! The dealer will contact you shortly.')
         reset()
-      } catch (err) {
-        setErrorMsg('Failed to process booking in local storage. Please try again.')
-        console.error(err)
-      } finally {
-        setLoading(false)
+      } else {
+        setErrorMsg(resData.errors?.[0] || resData.message || 'Booking submission failed.')
       }
-    }, 600)
+    } catch (err) {
+      setErrorMsg('Failed to process booking on backend. Please try again.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

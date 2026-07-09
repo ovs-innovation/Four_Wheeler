@@ -26,62 +26,93 @@ function VehiclesCatalogContent() {
   useEffect(() => {
     setSearchVal(querySearch)
 
-    const stored = localStorage.getItem('cj_vehicles')
-    if (stored) {
-      setVehicles(JSON.parse(stored))
-    } else {
-      localStorage.setItem('cj_vehicles', JSON.stringify(INITIAL_VEHICLES))
-      setVehicles(INITIAL_VEHICLES)
-    }
-  }, [querySearch])
+    const fetchCars = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const params = new URLSearchParams()
+        if (querySearch) params.append('search', querySearch)
+        if (brandFilter) params.append('brand', brandFilter)
+        if (conditionFilter) params.append('condition', conditionFilter)
+        if (fuelFilter) params.append('fuelType', fuelFilter)
+        if (transFilter) params.append('transmission', transFilter)
+        if (bodyFilter) params.append('bodyType', bodyFilter)
+        if (maxPriceFilter) params.append('maxPrice', maxPriceFilter)
+        if (sortOption) params.append('sort', sortOption)
 
-  // Filter in memory
+        const response = await fetch(`${apiBase}/cars?${params.toString()}`)
+        const data = await response.json()
+        if (data.success && data.data?.cars) {
+          setVehicles(data.data.cars)
+        } else {
+          loadFallback()
+        }
+      } catch (err) {
+        console.error('Failed to load cars from backend, using fallback:', err.message)
+        loadFallback()
+      }
+    }
+
+    const loadFallback = () => {
+      const stored = localStorage.getItem('cj_vehicles')
+      if (stored) {
+        setVehicles(JSON.parse(stored))
+      } else {
+        localStorage.setItem('cj_vehicles', JSON.stringify(INITIAL_VEHICLES))
+        setVehicles(INITIAL_VEHICLES)
+      }
+    }
+
+    fetchCars()
+  }, [querySearch, brandFilter, conditionFilter, fuelFilter, transFilter, bodyFilter, maxPriceFilter, sortOption])
+
+  // Filter & Sort
   let filtered = [...vehicles]
 
-  filtered = filtered.filter(v => v.status === 'APPROVED' && !v.isDeleted)
+  // If filtered locally (due to fallback or redundant safety check)
+  if (vehicles.length === INITIAL_VEHICLES.length) {
+    filtered = filtered.filter(v => v.status === 'APPROVED' && !v.isDeleted)
 
-  if (brandFilter) {
-    filtered = filtered.filter(
-      v => v.brandId === brandFilter || v.brandName?.toLowerCase() === brandFilter.toLowerCase()
-    )
-  }
-  if (conditionFilter) {
-    filtered = filtered.filter(v => v.condition === conditionFilter)
-  }
-  if (fuelFilter) {
-    filtered = filtered.filter(v => v.fuelType === fuelFilter)
-  }
-  if (transFilter) {
-    filtered = filtered.filter(v => v.transmission === transFilter)
-  }
-  if (bodyFilter) {
-    filtered = filtered.filter(v => v.bodyType === bodyFilter)
-  }
-  if (maxPriceFilter) {
-    filtered = filtered.filter(v => v.price <= maxPriceFilter)
-  }
-  if (querySearch) {
-    const q = querySearch.toLowerCase()
-    // HP search shortcut (e.g. search=500 finds cars near 500 HP output)
-    if (!isNaN(q)) {
-      filtered = filtered.filter(v => v.power >= Number(q) - 50 && v.power <= Number(q) + 50)
-    } else {
+    if (brandFilter) {
       filtered = filtered.filter(
-        v => v.title.toLowerCase().includes(q) || v.description.toLowerCase().includes(q) || v.sellerCity?.toLowerCase().includes(q)
+        v => v.brandId === brandFilter || v.brandName?.toLowerCase() === brandFilter.toLowerCase()
       )
     }
-  }
+    if (conditionFilter) {
+      filtered = filtered.filter(v => v.condition === conditionFilter)
+    }
+    if (fuelFilter) {
+      filtered = filtered.filter(v => v.fuelType === fuelFilter)
+    }
+    if (transFilter) {
+      filtered = filtered.filter(v => v.transmission === transFilter)
+    }
+    if (bodyFilter) {
+      filtered = filtered.filter(v => v.bodyType === bodyFilter)
+    }
+    if (maxPriceFilter) {
+      filtered = filtered.filter(v => v.price <= maxPriceFilter)
+    }
+    if (querySearch) {
+      const q = querySearch.toLowerCase()
+      if (!isNaN(q)) {
+        filtered = filtered.filter(v => v.power >= Number(q) - 50 && v.power <= Number(q) + 50)
+      } else {
+        filtered = filtered.filter(
+          v => v.title.toLowerCase().includes(q) || v.description.toLowerCase().includes(q) || v.sellerCity?.toLowerCase().includes(q)
+        )
+      }
+    }
 
-  // Sort
-  if (sortOption === 'price_asc') {
-    filtered.sort((a, b) => a.price - b.price)
-  } else if (sortOption === 'price_desc') {
-    filtered.sort((a, b) => b.price - a.price)
-  } else if (sortOption === 'mileage_asc') {
-    filtered.sort((a, b) => a.mileage - b.mileage)
-  } else {
-    // Newest
-    filtered.sort((a, b) => b.year - a.year)
+    // Sort
+    if (sortOption === 'price_asc') {
+      filtered.sort((a, b) => a.price - b.price)
+    } else if (sortOption === 'price_desc') {
+      filtered.sort((a, b) => b.price - a.price)
+    } else if (sortOption === 'mileage_asc') {
+      filtered.sort((a, b) => a.mileage - b.mileage)
+    } else {
+      filtered.sort((a, b) => b.year - a.year)
+    }
   }
 
   const formatPrice = (val) => {

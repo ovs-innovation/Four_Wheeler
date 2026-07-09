@@ -33,8 +33,8 @@ export default function Footer() {
                 <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-5h14v5zM7.5 13c-.83 0-1.5.67-1.5 1.5S6.67 16 7.5 16s1.5-.67 1.5-1.5S8.33 13 7.5 13zm9 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" />
               </svg>
               <div className="flex flex-col text-left">
-                <span className="text-lg font-black tracking-tight text-white leading-none">CAR</span>
-                <span className="text-xs font-extrabold tracking-wider text-accent leading-none">JUNCTION</span>
+                <span className="text-lg font-black tracking-tight text-white leading-none">FOUR</span>
+                <span className="text-xs font-extrabold tracking-wider text-accent leading-none">WHEELER</span>
               </div>
             </Link>
             <p className="text-xs text-slate-300 leading-relaxed">
@@ -59,7 +59,7 @@ export default function Footer() {
             <ul className="space-y-3 text-xs text-slate-300 font-semibold">
               <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent shrink-0" /> Mumbai, Maharashtra, India</li>
               <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-accent shrink-0" /> +91 1800 123 4567</li>
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-accent shrink-0" /> support@carjunction.com</li>
+              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-accent shrink-0" /> support@fourwheeler.com</li>
             </ul>
           </div>
 
@@ -94,7 +94,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-8 text-center text-xs text-slate-400 font-semibold">
-          &copy; {new Date().getFullYear()} Car Junction. Developed for Indian Drivers. All rights reserved.
+          &copy; {new Date().getFullYear()} Four Wheeler. Developed for Indian Drivers. All rights reserved.
         </div>
       </div>
     </footer>

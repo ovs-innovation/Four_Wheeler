@@ -71,7 +71,7 @@ function LoginForm() {
             </svg>
           </div>
           <h2 className="text-2xl font-black text-primary">Welcome Back</h2>
-          <p className="text-xs text-slate-500 font-semibold">Sign in to your premium Car Junction account</p>
+          <p className="text-xs text-slate-500 font-semibold">Sign in to your premium Four Wheeler account</p>
         </div>
 
         {/* Error Callout */}

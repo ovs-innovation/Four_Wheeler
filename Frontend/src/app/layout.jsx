@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata = {
-  title: "Car Junction | India's Premium Four-Wheeler Marketplace",
+  title: "Four Wheeler | India's Premium Four-Wheeler Marketplace",
   description: "Buy and sell premium new & used cars in India. Check car prices, performance specs, HP/engine parameters, EMI options, and locate verified dealers in your state.",
 }
 

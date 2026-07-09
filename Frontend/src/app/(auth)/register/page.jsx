@@ -38,39 +38,26 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
 
-    setTimeout(() => {
-      try {
-        const storedUsers = localStorage.getItem('cj_users')
-        const usersList = storedUsers ? JSON.parse(storedUsers) : []
-
-        const exists = usersList.find((u) => u.email.toLowerCase() === data.email.toLowerCase())
-        if (exists) {
-          setError('A user with this email address already exists.')
-          setLoading(false)
-          return
-        }
-
-        const newUser = {
-          id: 'u_' + Date.now(),
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          role: data.role,
-          city: 'Jaipur',
-          phone: '+91 99999 99999'
-        }
-
-        usersList.push(newUser)
-        localStorage.setItem('cj_users', JSON.stringify(usersList))
-
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      const resData = await response.json()
+      if (resData.success) {
         router.push('/login?registered=true')
-      } catch (err) {
-        setError('An error occurred during local registration.')
-        console.error(err)
-      } finally {
-        setLoading(false)
+      } else {
+        setError(resData.errors?.[0] || resData.message || 'Registration failed. Please try again.')
       }
-    }, 600)
+    } catch (err) {
+      setError('A network connection error occurred.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

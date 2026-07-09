@@ -51,6 +51,8 @@ export default function DealerDashboard() {
   const [formSuccess, setFormSuccess] = useState(null)
   const [formError, setFormError] = useState(null)
   const [formLoading, setFormLoading] = useState(false)
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
+  const [upgradeError, setUpgradeError] = useState(null)
 
   const [vehicles, setVehicles] = useState([])
   const [leads, setLeads] = useState([])
@@ -128,14 +130,78 @@ export default function DealerDashboard() {
   if (!session) return null
 
   if (session?.user?.role === 'USER') {
+    const handleUpgrade = async (roleType) => {
+      setUpgradeLoading(true)
+      setUpgradeError(null)
+      try {
+        const token = localStorage.getItem('cj_user_token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ role: roleType })
+        })
+        const resData = await response.json()
+        if (resData.success) {
+          window.location.reload()
+        } else {
+          setUpgradeError(resData.message || 'Upgrade failed. Please try again.')
+        }
+      } catch (err) {
+        setUpgradeError('Connection error occurred.')
+      } finally {
+        setUpgradeLoading(false)
+      }
+    }
+
     return (
-      <div className="max-w-md mx-auto my-24 p-8 bg-white border border-border rounded-2xl text-center space-y-4 shadow-md">
-        <AlertCircle className="h-10 w-10 text-accent mx-auto animate-bounce" />
-        <h2 className="text-xl font-bold text-primary">Upgrade to Seller</h2>
-        <p className="text-xs text-slate-500 font-semibold">Standard buyer profiles do not have access to dealer dashboard panels. Please create a seller or dealer account.</p>
-        <button onClick={() => router.push('/')} className="bg-accent text-white font-extrabold px-6 py-2.5 rounded-lg text-xs cursor-pointer">
-          Return Home
-        </button>
+      <div className="max-w-md mx-auto my-24 p-8 bg-white border border-border rounded-2xl text-center space-y-6 shadow-md text-left">
+        <div className="text-center">
+          <AlertCircle className="h-10 w-10 text-accent mx-auto animate-bounce mb-2" />
+          <h2 className="text-xl font-bold text-primary">Upgrade to Seller</h2>
+          <p className="text-xs text-slate-500 font-semibold mt-2">
+            Standard buyer profiles do not have access to sell cars. Choose an account upgrade route to unlock listing tools.
+          </p>
+        </div>
+
+        {upgradeError && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold p-3 rounded-lg flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{upgradeError}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 pt-2">
+          <button
+            onClick={() => handleUpgrade('INDIVIDUAL_SELLER')}
+            disabled={upgradeLoading}
+            className="w-full py-3 border border-border hover:border-accent hover:bg-slate-50 rounded-xl transition-all cursor-pointer text-left px-4 flex flex-col justify-center gap-0.5 disabled:opacity-50 animate-fade-in"
+          >
+            <span className="text-xs font-black text-primary uppercase">Become Private Seller</span>
+            <span className="text-[10px] text-slate-400 font-semibold">List your own personal vehicle for buyers to contact you directly.</span>
+          </button>
+
+          <button
+            onClick={() => handleUpgrade('DEALER')}
+            disabled={upgradeLoading}
+            className="w-full py-3 border border-border hover:border-accent hover:bg-slate-50 rounded-xl transition-all cursor-pointer text-left px-4 flex flex-col justify-center gap-0.5 disabled:opacity-50 animate-fade-in"
+          >
+            <span className="text-xs font-black text-primary uppercase">Become Dealership Merchant</span>
+            <span className="text-[10px] text-slate-400 font-semibold">Get premium buyer leads, manage inventory limits, and post specs.</span>
+          </button>
+        </div>
+
+        <div className="pt-2 flex justify-center gap-3">
+          <button
+            onClick={() => router.push('/')}
+            disabled={upgradeLoading}
+            className="bg-slate-100 hover:bg-slate-200 text-primary font-bold px-6 py-2 rounded-lg text-xs cursor-pointer disabled:opacity-50"
+          >
+            Return Home
+          </button>
+        </div>
       </div>
     )
   }
@@ -391,7 +457,7 @@ export default function DealerDashboard() {
               <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl border border-border mt-4">
                 <CheckCircle className="h-8 w-8 text-green-500 shrink-0" />
                 <div>
-                  <span className="text-xs font-extrabold text-primary block">Car Junction Certified</span>
+                  <span className="text-xs font-extrabold text-primary block">Four Wheeler Certified</span>
                   <span className="text-[10px] text-slate-400">Excellent seller verified</span>
                 </div>
               </div>

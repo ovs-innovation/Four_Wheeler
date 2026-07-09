@@ -48,8 +48,8 @@ export default function Header() {
               <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-5h14v5zM7.5 13c-.83 0-1.5.67-1.5 1.5S6.67 16 7.5 16s1.5-.67 1.5-1.5S8.33 13 7.5 13zm9 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" />
             </svg>
             <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight text-primary leading-none">CAR</span>
-              <span className="text-sm font-extrabold tracking-wider text-accent leading-none">JUNCTION</span>
+              <span className="text-xl font-black tracking-tight text-primary leading-none">FOUR</span>
+              <span className="text-sm font-extrabold tracking-wider text-accent leading-none">WHEELER</span>
             </div>
           </Link>
 
@@ -90,7 +90,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             {/* SELL Button (Red Portal highlight) */}
             <Link
-              href={session?.user?.role === 'DEALER' || session?.user?.role === 'INDIVIDUAL_SELLER' ? '/dealer' : '/register'}
+              href={session ? '/dealer' : '/register'}
               className="bg-accent hover:bg-secondary text-white font-extrabold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm shrink-0 cursor-pointer"
             >
               <PlusCircle className="h-4 w-4" /> SELL

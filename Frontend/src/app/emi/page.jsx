@@ -11,12 +11,28 @@ export default function EmiCalculatorPage() {
   const [customPrice, setCustomPrice] = useState(2500000)
 
   useEffect(() => {
-    const stored = localStorage.getItem('cj_vehicles')
-    if (stored) {
-      setVehicles(JSON.parse(stored))
-    } else {
-      setVehicles(INITIAL_VEHICLES)
+    const fetchCars = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const response = await fetch(`${apiBase}/cars?limit=1000`)
+        const data = await response.json()
+        if (data.success && data.data?.cars) {
+          setVehicles(data.data.cars)
+        } else {
+          loadFallback()
+        }
+      } catch (err) {
+        console.error('Failed to load cars in EMI page, using fallback:', err.message)
+        loadFallback()
+      }
     }
+
+    const loadFallback = () => {
+      const stored = localStorage.getItem('cj_vehicles')
+      setVehicles(stored ? JSON.parse(stored) : INITIAL_VEHICLES)
+    }
+
+    fetchCars()
   }, [])
 
   const selectedCar = vehicles.find((v) => v.id === selectedCarId)

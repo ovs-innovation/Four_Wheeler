@@ -5,18 +5,50 @@ import { INITIAL_VEHICLES } from '@/lib/mock-data'
 import { ArrowLeftRight, Check, X, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 
+const getFirstImg = (car) => {
+  if (!car) return '';
+  if (Array.isArray(car.galleryImages) && car.galleryImages.length > 0) {
+    return car.galleryImages[0];
+  }
+  if (typeof car.images === 'string' && car.images) {
+    return car.images.split(',')[0];
+  }
+  if (car.thumbnail) {
+    return car.thumbnail;
+  }
+  return 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e';
+}
+
 export default function ComparePage() {
   const [vehicles, setVehicles] = useState([])
   const [carAId, setCarAId] = useState('')
   const [carBId, setCarBId] = useState('')
 
   useEffect(() => {
-    const stored = localStorage.getItem('cj_vehicles')
-    if (stored) {
-      setVehicles(JSON.parse(stored))
-    } else {
-      setVehicles(INITIAL_VEHICLES)
+    const fetchCars = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const response = await fetch(`${apiBase}/cars?limit=1000`)
+        const data = await response.json()
+        if (data.success && data.data?.cars) {
+          const carArray = data.data.cars || [];
+          setVehicles(carArray.map(c => ({ ...c, id: String(c.id || c._id) })))
+        } else {
+          loadFallback()
+        }
+      } catch (err) {
+        console.error('Failed to load cars in comparison selector, using fallback:', err.message)
+        loadFallback()
+      }
     }
+
+    const loadFallback = () => {
+      const stored = localStorage.getItem('cj_vehicles')
+      const loaded = stored ? JSON.parse(stored) : INITIAL_VEHICLES
+      setVehicles(loaded.map(c => ({ ...c, id: String(c.id || c._id) })))
+    }
+
+    fetchCars()
   }, [])
 
   const carA = vehicles.find((v) => v.id === carAId)
@@ -124,7 +156,7 @@ export default function ComparePage() {
             {/* Car A Cover */}
             <div className="p-6 space-y-3 border-x border-border text-left">
               <div className="aspect-[16/10] bg-slate-100 rounded-lg overflow-hidden border border-border">
-                <img src={carA.images.split(',')[0]} alt={carA.title} className="w-full h-full object-cover" />
+                <img src={getFirstImg(carA)} alt={carA.title} className="w-full h-full object-cover" />
               </div>
               <h4 className="font-extrabold text-sm text-primary line-clamp-1">
                 <Link href={`/vehicles/${carA.slug}`} className="hover:underline hover:text-accent">{carA.title}</Link>
@@ -134,7 +166,7 @@ export default function ComparePage() {
             {/* Car B Cover */}
             <div className="p-6 space-y-3 text-left">
               <div className="aspect-[16/10] bg-slate-100 rounded-lg overflow-hidden border border-border">
-                <img src={carB.images.split(',')[0]} alt={carB.title} className="w-full h-full object-cover" />
+                <img src={getFirstImg(carB)} alt={carB.title} className="w-full h-full object-cover" />
               </div>
               <h4 className="font-extrabold text-sm text-primary line-clamp-1">
                 <Link href={`/vehicles/${carB.slug}`} className="hover:underline hover:text-accent">{carB.title}</Link>

@@ -16,18 +16,32 @@ export default function VehicleDetailPage({ params }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem('cj_vehicles')
-    let list = []
-    if (stored) {
-      list = JSON.parse(stored)
-    } else {
-      list = INITIAL_VEHICLES
-      localStorage.setItem('cj_vehicles', JSON.stringify(INITIAL_VEHICLES))
+    const fetchCar = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const response = await fetch(`${apiBase}/cars/${slug}`)
+        const data = await response.json()
+        if (data.success && data.data) {
+          setVehicle(data.data)
+        } else {
+          loadFallback()
+        }
+      } catch (err) {
+        console.error('Failed to load car details from backend, falling back to mock data:', err.message)
+        loadFallback()
+      } finally {
+        setLoading(false)
+      }
     }
 
-    const matched = list.find((v) => v.slug === slug && !v.isDeleted)
-    setVehicle(matched || null)
-    setLoading(false)
+    const loadFallback = () => {
+      const stored = localStorage.getItem('cj_vehicles')
+      const list = stored ? JSON.parse(stored) : INITIAL_VEHICLES
+      const matched = list.find((v) => v.slug === slug && !v.isDeleted)
+      setVehicle(matched || null)
+    }
+
+    fetchCar()
   }, [slug])
 
   if (loading) {

@@ -31,43 +31,48 @@ export default function ProfilePage() {
     }
 
     if (session?.user) {
-      // 1. Get Bookings
-      const storedBookings = localStorage.getItem('cj_bookings')
-      let bookingsList = []
-      if (storedBookings) {
-        bookingsList = JSON.parse(storedBookings)
-      } else {
-        bookingsList = [
-          { 
-            id: 'b1', 
-            vehicleId: 't1', 
-            vehicleTitle: 'John Deere 5050 D', 
-            userId: session.user.id, 
-            name: session.user.name, 
-            email: session.user.email, 
-            phone: '+91 96666 66666', 
-            dateTime: '2026-07-08T11:00', 
-            notes: 'Morning slot request.', 
-            status: 'PENDING', 
-            type: 'TEST_DRIVE' 
-          }
-        ]
-        localStorage.setItem('cj_bookings', JSON.stringify(bookingsList))
-      }
+      const token = localStorage.getItem('cj_user_token')
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
-      const userBookings = bookingsList.filter((b) => b.userId === session.user.id)
-      setBookings(userBookings)
+      // 1. Get Bookings / Enquiries
+      const fetchBookings = async () => {
+        try {
+          const response = await fetch(`${apiBase}/enquiries`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+          const data = await response.json()
+          if (data.success && data.data) {
+            setBookings(data.data)
+          }
+        } catch (err) {
+          console.error('Failed to load enquiries:', err)
+        }
+      }
 
       // 2. Get Wishlist
-      const storedWishlist = localStorage.getItem('cj_wishlist')
-      if (storedWishlist) {
-        setWishlist(JSON.parse(storedWishlist))
-      } else {
-        localStorage.setItem('cj_wishlist', JSON.stringify(DEFAULT_WISHLIST))
-        setWishlist(DEFAULT_WISHLIST)
+      const fetchWishlist = async () => {
+        try {
+          const response = await fetch(`${apiBase}/auth/wishlist`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+          const data = await response.json()
+          if (data.success && data.data) {
+            // Map car image field for the frontend layout compatibility
+            const mappedWishlist = data.data.map(car => ({
+              ...car,
+              image: car.image || car.thumbnail || (car.images && car.images.split(',')[0]) || 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e'
+            }))
+            setWishlist(mappedWishlist)
+          }
+        } catch (err) {
+          console.error('Failed to load wishlist:', err)
+        }
       }
 
-      // 3. Saved Searches
+      fetchBookings()
+      fetchWishlist()
+
+      // 3. Saved Searches (keep local)
       const storedSearches = localStorage.getItem('cj_searches')
       if (storedSearches) {
         setSearches(JSON.parse(storedSearches))
@@ -95,30 +100,43 @@ export default function ProfilePage() {
     return `₹ ${val.toLocaleString()}`
   }
 
-  const handleCancelBooking = (bookingId) => {
+  const handleCancelBooking = async (bookingId) => {
     if (!confirm('Are you sure you want to cancel this test drive session?')) return
-    
+
     try {
-      const stored = localStorage.getItem('cj_bookings')
-      if (stored) {
-        const list = JSON.parse(stored)
-        const updated = list.map((b) => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b)
-        localStorage.setItem('cj_bookings', JSON.stringify(updated))
-        setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b))
+      const token = localStorage.getItem('cj_user_token')
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+
+      const response = await fetch(`${apiBase}/enquiries/${bookingId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const data = await response.json()
+      if (data.success) {
+        setBookings(prev => prev.filter(b => b._id !== bookingId && b.id !== bookingId))
+        toast?.success?.('Test drive cancelled successfully!') || alert('Test drive cancelled successfully!')
       }
     } catch (e) {
       console.error(e)
     }
   }
 
-  const handleRemoveWishlist = (itemId) => {
+  const handleRemoveWishlist = async (itemId) => {
     try {
-      const stored = localStorage.getItem('cj_wishlist')
-      if (stored) {
-        const list = JSON.parse(stored)
-        const updated = list.filter((i) => i.id !== itemId)
-        localStorage.setItem('cj_wishlist', JSON.stringify(updated))
-        setWishlist(updated)
+      const token = localStorage.getItem('cj_user_token')
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+
+      const response = await fetch(`${apiBase}/auth/wishlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ bikeId: itemId }) // support both numeric and ObjectId
+      })
+      const data = await response.json()
+      if (data.success) {
+        setWishlist(prev => prev.filter((i) => i.id !== itemId && i._id !== itemId))
       }
     } catch (e) {
       console.error(e)
@@ -127,7 +145,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
-      
+
       {/* User Card */}
       <div className="bg-white p-6 sm:p-8 rounded-2xl border border-border flex flex-col sm:flex-row items-center gap-6 justify-between animate-in fade-in duration-300 shadow-sm text-left">
         <div className="flex items-center gap-4.5">
@@ -158,11 +176,10 @@ export default function ProfilePage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 text-xs font-extrabold px-5 py-3 rounded-lg transition-all shrink-0 cursor-pointer ${
-                activeTab === tab.id
-                  ? 'bg-accent text-white font-black'
-                  : 'text-slate-500 hover:text-primary hover:bg-slate-50'
-              }`}
+              className={`flex items-center gap-2 text-xs font-extrabold px-5 py-3 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === tab.id
+                ? 'bg-accent text-white font-black'
+                : 'text-slate-500 hover:text-primary hover:bg-slate-50'
+                }`}
             >
               <Icon className="h-4 w-4" />
               {tab.label}
@@ -211,7 +228,7 @@ export default function ProfilePage() {
           <div className="p-6 border-b border-slate-100 text-left">
             <h3 className="font-extrabold text-sm text-primary">Active Test Drive Appointments</h3>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-semibold">
               <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase tracking-wider">
@@ -226,36 +243,30 @@ export default function ProfilePage() {
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {bookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={booking._id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="p-4.5 font-bold text-primary">{booking.vehicleTitle || 'Car'}</td>
                     <td className="p-4.5">
                       <span className="flex items-center gap-1.5 font-bold text-slate-600">
                         <Calendar className="h-3.5 w-3.5 text-accent" />
-                        {new Date(booking.dateTime).toLocaleString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {booking.date}
                       </span>
                     </td>
                     <td className="p-4.5 uppercase tracking-wide text-[10px]">Dealer Test Drive</td>
-                    <td className="p-4.5 text-slate-500 truncate max-w-xs">{booking.notes || 'N/A'}</td>
+                    <td className="p-4.5 text-slate-500 truncate max-w-xs">{booking.message || 'N/A'}</td>
                     <td className="p-4.5">
-                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold border uppercase tracking-wider ${
-                        booking.status === 'PENDING'
-                          ? 'bg-blue-500/10 text-blue-600 border-blue-500/20'
-                          : booking.status === 'CANCELLED'
+                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold border uppercase tracking-wider ${booking.status === 'Pending'
+                        ? 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+                        : booking.status === 'Cancelled'
                           ? 'bg-destructive/10 text-destructive border-destructive/20'
                           : 'bg-green-500/10 text-green-600 border-green-500/20'
-                      }`}>
+                        }`}>
                         {booking.status}
                       </span>
                     </td>
                     <td className="p-4.5 text-right">
-                      {booking.status === 'PENDING' && (
-                        <button 
-                          onClick={() => handleCancelBooking(booking.id)}
+                      {booking.status === 'Pending' && (
+                        <button
+                          onClick={() => handleCancelBooking(booking._id)}
                           className="text-[10px] font-bold text-destructive hover:underline cursor-pointer"
                         >
                           Cancel Appointment
@@ -287,11 +298,11 @@ export default function ProfilePage() {
                 <h4 className="font-extrabold text-sm text-primary flex items-center gap-1.5"><Bookmark className="h-4 w-4 text-accent" /> {search.name}</h4>
                 <p className="text-[10px] text-slate-400 font-bold uppercase">{search.criteria}</p>
               </div>
-              <button 
+              <button
                 onClick={() => {
                   const query = search.criteria.includes('Mahindra') ? 'brand=mahindra' : 'search=45'
                   router.push(`/vehicles?${query}`)
-                }} 
+                }}
                 className="bg-slate-50 hover:bg-accent hover:text-white font-extrabold text-[10px] px-3.5 py-2 rounded-lg border border-border transition-all cursor-pointer text-slate-700"
               >
                 Run Search

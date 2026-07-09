@@ -9,14 +9,14 @@ export default function Testimonials() {
       id: 1,
       name: "Suresh Kumar",
       role: "Buyer, New Delhi",
-      quote: "Bought a certified pre-owned Porsche 911 GT3 RS through Car Junction. The mechanical evaluation logs were 100% accurate, and the customer assistance during ownership transfer was extremely swift.",
+      quote: "Bought a certified pre-owned Porsche 911 GT3 RS through Four Wheeler. The mechanical evaluation logs were 100% accurate, and the customer assistance during ownership transfer was extremely swift.",
       rating: 5
     },
     {
       id: 2,
       name: "Satnam Singh",
       role: "Dealer Manager, Apex Motors, Mumbai",
-      quote: "Listing our premium inventory on Car Junction has increased our buyer inquiries significantly. The lead management and call log triggers work flawlessly.",
+      quote: "Listing our premium inventory on Four Wheeler has increased our buyer inquiries significantly. The lead management and call log triggers work flawlessly.",
       rating: 5
     }
   ]

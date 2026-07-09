@@ -10,12 +10,29 @@ export default function NewsHubPage() {
   const [selectedBlogId, setSelectedBlogId] = useState(null)
 
   useEffect(() => {
-    const stored = localStorage.getItem('cj_blogs')
-    if (stored) {
-      setBlogs(JSON.parse(stored))
-    } else {
-      setBlogs(INITIAL_BLOGS)
+    const fetchBlogs = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const response = await fetch(`${apiBase}/blogs?limit=100`)
+        const data = await response.json()
+        if (data.success && data.data) {
+          const blogArray = Array.isArray(data.data) ? data.data : (data.data.blogs || [])
+          setBlogs(blogArray.map(b => ({ ...b, id: b.id || b._id })))
+        } else {
+          loadFallback()
+        }
+      } catch (err) {
+        console.error('Failed to load articles from backend, using fallback:', err.message)
+        loadFallback()
+      }
     }
+
+    const loadFallback = () => {
+      const stored = localStorage.getItem('cj_blogs')
+      setBlogs(stored ? JSON.parse(stored) : INITIAL_BLOGS)
+    }
+
+    fetchBlogs()
   }, [])
 
   const selectedBlog = blogs.find((b) => b.id === selectedBlogId)
