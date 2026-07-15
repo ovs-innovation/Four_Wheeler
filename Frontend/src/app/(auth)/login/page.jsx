@@ -7,7 +7,7 @@ import { signIn } from '@/lib/mock-auth'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Car, Mail, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
+import { Car, Mail, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -19,6 +19,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   
   const callbackUrl = searchParams.get('callbackUrl') || '/'
 
@@ -108,11 +109,18 @@ function LoginForm() {
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"><Lock className="h-4 w-4" /></span>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 {...register('password')}
-                className="w-full bg-slate-50 border border-border rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-accent text-foreground font-semibold"
+                className="w-full bg-slate-50 border border-border rounded-lg pl-10 pr-10 py-3 text-sm focus:outline-none focus:border-accent text-foreground font-semibold"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
             </div>
             {errors.password && (
               <span className="text-[10px] text-destructive font-semibold">{errors.password.message}</span>

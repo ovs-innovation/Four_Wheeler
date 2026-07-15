@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Lock, Mail, Key } from 'lucide-react';
+import { Lock, Mail, Key, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const { login, isAuthenticated, loading } = useAdminAuth();
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -84,9 +85,9 @@ export default function AdminLoginPage() {
                 <Key size={16} />
               </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className={`block w-full pl-10 pr-3 py-2.5 bg-[#151515] border rounded-[14px] text-xs text-white placeholder-[#6B7280] focus:outline-none focus:ring-1 transition-all ${
+                className={`block w-full pl-10 pr-10 py-2.5 bg-[#151515] border rounded-[14px] text-xs text-white placeholder-[#6B7280] focus:outline-none focus:ring-1 transition-all ${
                   errors.password ? 'border-[#EF4444] focus:ring-[#EF4444]/20' : 'border-[#303030] focus:ring-[#D4AF37]/20 focus:border-[#D4AF37]'
                 }`}
                 {...register('password', {
@@ -94,6 +95,13 @@ export default function AdminLoginPage() {
                   minLength: { value: 6, message: 'Must be at least 6 characters' }
                 })}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B7280] hover:text-white transition-colors cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
             {errors.password && <span className="text-[10px] text-[#EF4444] mt-1 block">{errors.password.message}</span>}
           </div>
