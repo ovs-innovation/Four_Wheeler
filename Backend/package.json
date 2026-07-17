@@ -1,7 +1,7 @@
 {
   "name": "four-wheeler-backend",
   "version": "1.0.0",
-  "description": "Backend for Four Wheeler, India's biggest Four Wheeler marketplace",
+  "description": "Backend for 4Pahia, India's biggest Four Wheeler marketplace",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {

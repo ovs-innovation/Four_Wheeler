@@ -83,21 +83,12 @@ export default function DashboardLayout({ children }) {
         {/* Logo */}
 
         <div className="h-20 flex items-center px-7 border-b border-[#2A2A2A]">
-
-          <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#F4B400] to-[#D4AF37] flex items-center justify-center text-black font-black text-lg shadow-md shadow-amber-500/10">
-            FW
+          <div className="flex items-center gap-3">
+            <img src="/logo-light.png" alt="4Pahia Logo" className="h-10 w-auto object-contain" />
+            <span className="text-[10px] text-[#6B7280] uppercase tracking-widest font-bold border-l border-[#2A2A2A] pl-3 py-1">
+              Admin
+            </span>
           </div>
-
-          <div className="ml-3">
-            <h2 className="font-bold text-white tracking-wide text-sm font-sans">
-              FOUR WHEELER
-            </h2>
-
-            <p className="text-[10px] text-[#6B7280] uppercase tracking-widest font-bold">
-              Admin Panel
-            </p>
-          </div>
-
         </div>
 
         {/* Navigation */}

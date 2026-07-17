@@ -12,7 +12,7 @@ export default function FAQSection() {
       a: "Luxury car registration is processed through local state RTOs. High-security registration plates (HSRP), temporary TC configurations, and state road tax computations must be cleared through dealer invoicing before driving public roads."
     },
     {
-      q: "How does Four Wheeler verify used car listings?",
+      q: "How does 4Pahia verify used car listings?",
       a: "Every certified pre-owned car listed goes through a comprehensive 120-point checklist checking engine health, suspension alignment, onboard electronics diagnostic logs, paint thickness parameters (to verify accidents), and previous service record logs."
     },
     {

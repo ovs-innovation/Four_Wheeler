@@ -40,11 +40,11 @@ export default function AdminLoginPage() {
         
         {/* Title Header */}
         <div className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 bg-gradient-to-br from-[#F4B400] to-[#D4AF37] rounded-[10px] flex items-center justify-center text-black shadow-md shadow-amber-500/10">
-            <Lock size={20} />
+          <div className="mx-auto h-12 flex items-center justify-center mb-2">
+            <img src="/logo-light.png" alt="4Pahia Logo" className="h-12 w-auto object-contain" />
           </div>
           <h1 className="font-sans font-extrabold text-xl text-white tracking-tight uppercase">
-            Four Wheeler Admin Portal
+            4Pahia Admin Portal
           </h1>
           <p className="text-xs text-[#9CA3AF]">
             Enter credentials to access system directories.
@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
               </div>
               <input
                 type="email"
-                placeholder="admin@fourwheeler.com"
+                placeholder="admin@4pahia.com"
                 className={`block w-full pl-10 pr-3 py-2.5 bg-[#151515] border rounded-[14px] text-xs text-white placeholder-[#6B7280] focus:outline-none focus:ring-1 transition-all ${
                   errors.email ? 'border-[#EF4444] focus:ring-[#EF4444]/20' : 'border-[#303030] focus:ring-[#D4AF37]/20 focus:border-[#D4AF37]'
                 }`}

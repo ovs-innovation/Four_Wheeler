@@ -65,10 +65,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-md bg-white border border-border p-8 rounded-2xl shadow-md space-y-8 glass">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex bg-accent/10 p-2.5 rounded-xl text-accent font-bold mb-2">
-            <svg className="h-6 w-6 text-accent fill-current" viewBox="0 0 24 24">
-              <path d="M4 17c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3zm13-3c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM1 12h13v3h-1.5c-1.32 0-2.44-.88-2.82-2.09A3.87 3.87 0 0 0 4.5 15c-1.66 0-3-1.34-3-3s1.34-3 3-3c1.66 0 3 1.34 3 3" />
-            </svg>
+          <div className="inline-flex bg-accent/10 p-2 rounded-xl text-accent font-bold mb-2">
+            <img src="/logo-dark.png" alt="4Pahia Logo" className="h-10 w-auto object-contain" />
           </div>
           <h2 className="text-2xl font-black text-primary">Create Account</h2>
           <p className="text-xs text-slate-500 font-semibold">Join India's premier car marketplace</p>

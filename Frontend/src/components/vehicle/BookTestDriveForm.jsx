@@ -61,7 +61,7 @@ export default function BookTestDriveForm({ vehicleId, vehicleTitle }) {
           phone: data.phone,
           bikeName: vehicleTitle,
           vehicleTitle: vehicleTitle,
-          bikeBrand: 'Four Wheeler',
+          bikeBrand: '4Pahia',
           type: 'TEST_DRIVE',
           message: data.notes || 'Interested in booking a demonstration session.'
         })

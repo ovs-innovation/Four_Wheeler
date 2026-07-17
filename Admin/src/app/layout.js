@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Four Wheeler - Admin Dashboard",
-  description: "Administrative dashboard for Four Wheeler marketplace.",
+  title: "4Pahia - Admin Dashboard",
+  description: "Administrative dashboard for 4Pahia marketplace.",
 };
 
 export default function RootLayout({ children }) {

@@ -457,7 +457,7 @@ export default function DealerDashboard() {
               <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl border border-border mt-4">
                 <CheckCircle className="h-8 w-8 text-green-500 shrink-0" />
                 <div>
-                  <span className="text-xs font-extrabold text-primary block">Four Wheeler Certified</span>
+                  <span className="text-xs font-extrabold text-primary block">4Pahia Certified</span>
                   <span className="text-[10px] text-slate-400">Excellent seller verified</span>
                 </div>
               </div>

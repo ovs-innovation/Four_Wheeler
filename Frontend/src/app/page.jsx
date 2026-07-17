@@ -149,13 +149,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. Four Wheeler Certification Protection */}
+      {/* 6. 4Pahia Certification Protection */}
       <section className="py-16 bg-white border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex p-3.5 rounded-full bg-accent/10 text-accent mb-2">
             <ShieldCheck className="h-9 w-9" />
           </div>
-          <h3 className="text-2xl font-black text-primary tracking-tight">Four Wheeler Certified Protection</h3>
+          <h3 className="text-2xl font-black text-primary tracking-tight">4Pahia Certified Protection</h3>
           <p className="text-xs text-slate-500 font-semibold leading-relaxed max-w-2xl mx-auto">
             Get complete peace of mind with our 120-point mechanical evaluation. We check engine compression values, brake responsiveness, suspension wear, and onboard diagnostics logs so you buy with total confidence.
           </p>

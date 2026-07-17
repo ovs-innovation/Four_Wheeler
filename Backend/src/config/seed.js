@@ -12,12 +12,12 @@ const seedData = async () => {
       console.log('MongoDB: Seeding default administrator account...');
       await Admin.create({
         name: 'Aditya Sharma',
-        email: 'admin@fourwheeler.com',
+        email: 'admin@4pahia.com',
         password: 'password123',
         role: 'superadmin',
         status: 'active'
       });
-      console.log('MongoDB: Default admin seeded (admin@fourwheeler.com / password123)');
+      console.log('MongoDB: Default admin seeded (admin@4pahia.com / password123)');
     }
 
     // 1. Seed Brands
